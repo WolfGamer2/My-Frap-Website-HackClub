@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Website with VR</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+        #vr-button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #00f;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button id="vr-button">Enter VR</button>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@webxr-polyfill@latest/build/webxr-polyfill.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/jsm/webxr/WebXRButton.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/jsm/webxr/WebXRManager.js"></script>
+    <script>
+        // Scene
+        const scene = new THREE.Scene();
+
+        // Camera
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        // Renderer
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.xr.enabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        // VR Button
+        const vrButton = document.getElementById('vr-button');
+        vrButton.addEventListener('click', () => {
+            if (renderer.xr.isPresenting) {
+                renderer.xr.exit();
+            } else {
+                renderer.xr.enter();
+            }
+        });
+
+        // Geometry and Material for Cube
+        const cubeGeometry = new THREE.BoxGeometry();
+        const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+        cube.position.x = -2;
+        scene.add(cube);
+
+        // Geometry and Material for Sphere
+        const sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+        const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        sphere.position.x = 0;
+        scene.add(sphere);
+
+        // Geometry and Material for Cone
+        const coneGeometry = new THREE.ConeGeometry(0.5, 1, 32);
+        const coneMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+        const cone = new THREE.Mesh(coneGeometry, coneMaterial);
+        cone.position.x = 2;
+        scene.add(cone);
+
+        // Geometry and Material for Torus
+        const torusGeometry = new THREE.TorusGeometry(0.5, 0.2, 16, 100);
+        const torusMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+        torus.position.x = 4;
+        scene.add(torus);
+
+        // Animation
+        function animate() {
+            renderer.setAnimationLoop(() => {
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+
+                sphere.rotation.x += 0.01;
+                sphere.rotation.y += 0.01;
+
+                cone.rotation.x += 0.01;
+                cone.rotation.y += 0.01;
+
+                torus.rotation.x += 0.01;
+                torus.rotation.y += 0.01;
+
+                renderer.render(scene, camera);
+            });
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+</html>
+
